@@ -226,7 +226,7 @@ public class JUnitAnalyzer {
 				}
 
 				boolean toRemove = !(failure.isAssertionError());
-				if(!Properties.target_version.isEmpty()){
+				if(!Properties.target_commit.isEmpty()){
 					toRemove=true;
 				}
 

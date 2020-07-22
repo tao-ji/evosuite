@@ -95,10 +95,17 @@ public class Properties {
 
 	// ---------------------------------------------------------------
 	// Test sequence creation
-	@Parameter(key= "working_dir", group = "Test Creation", description = "the working dir contains the src and jars")
-	public static String working_dir = "";
-	@Parameter(key = "target_version", group = "Test Creation", description = "the target version")
-	public static String target_version = "";
+	@Parameter(key= "jars_path", group = "Test Creation", description = "the working dir contains and jars")
+	public static String jars_path= "";
+
+	@Parameter(key = "repo_path", group = "Test Creation", description = "the path of repository")
+	public static String repo_path = "";
+
+	@Parameter(key = "target_commit", group = "Test Creation", description = "the target version")
+	public static String target_commit = "";
+
+	@Parameter(key = "mutant_commits", group = "Test Creation", description = "the versions should be killed")
+	public static String mutant_commits = "";
 
 	@Parameter(key = "test_excludes", group = "Test Creation", description = "File containing methods that should not be used in testing")
 	public static String TEST_EXCLUDES = "test.excludes";

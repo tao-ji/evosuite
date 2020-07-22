@@ -73,25 +73,25 @@ public class LineCoverageFactory extends
 
 	public LineCoverageFactory(boolean diff){
 		this.diff=diff;
-		String versSrcPath = Properties.working_dir+"/src";
+//		String versSrcPath = Properties.working_dir+"/src";
 //		String targetClassName = Properties.getTargetClassAndDontInitialise().getName();
 
-		List<String> filePaths = new ArrayList<>();
+//		List<String> filePaths = new ArrayList<>();
+//
+//		if(Properties.target_version.startsWith("m")){
+//			int numVersions = Integer.valueOf(Properties.target_version.substring(1));
+//			for(int i=1;i<=numVersions;i++){
+//				filePaths.add(versSrcPath+File.separator+"p"+i);
+//				}
+//				filePaths.add(versSrcPath+File.separator+"merge");
+//		}else{
+//		    filePaths.add(versSrcPath+File.separator+"base");
+//			filePaths.add(versSrcPath+File.separator+"merge");
+//			filePaths.add(versSrcPath+File.separator+Properties.target_version);
+//		}
 
-		if(Properties.target_version.startsWith("m")){
-			int numVersions = Integer.valueOf(Properties.target_version.substring(1));
-			for(int i=1;i<=numVersions;i++){
-				filePaths.add(versSrcPath+File.separator+"p"+i);
-				}
-				filePaths.add(versSrcPath+File.separator+"merge");
-		}else{
-		    filePaths.add(versSrcPath+File.separator+"base");
-			filePaths.add(versSrcPath+File.separator+"merge");
-			filePaths.add(versSrcPath+File.separator+Properties.target_version);
-		}
-
-		DiffLinesExtractor.getInstance().setFilePaths(filePaths);
-		DiffLinesExtractor.getInstance().diff();
+//		DiffLinesExtractor.getInstance().setFilePaths(filePaths);
+//		DiffLinesExtractor.getInstance().diff();
 
 	}
 	/*
@@ -108,14 +108,14 @@ public class LineCoverageFactory extends
 		long start = System.currentTimeMillis();
 
 		if(diff){
-			List<Map<String,List<Integer>>> diffLinesList = DiffLinesExtractor.getInstance().getDiffLinesList();
+			List<Map<String,Set<Integer>>> diffLinesList = DiffLinesExtractor.getInstance().diff();
 			LoggingUtils.getEvoLogger().info("extracted lines:"+diffLinesList.toString());
 			for(String className : LinePool.getKnownClasses()) {
 				LoggingUtils.getEvoLogger().info("known class:" + className);
 
 				//className may be the name of the inner class
 				Set<Integer> diffLines = new HashSet<>();
-				for (Map<String, List<Integer>> delta : diffLinesList) {
+				for (Map<String, Set<Integer>> delta : diffLinesList) {
 					for (String key : delta.keySet()) {
 						if (className.startsWith(key)) {
 							diffLines.addAll(delta.get(key));

@@ -59,6 +59,7 @@ import org.evosuite.seeding.ConstantPoolManager;
 import org.evosuite.setup.PutStaticMethodCollector.MethodIdentifier;
 import org.evosuite.setup.callgraph.CallGraph;
 import org.evosuite.statistics.RuntimeVariable;
+import org.evosuite.tom.DiffLinesExtractor;
 import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.generic.GenericAccessibleObject;
 import org.evosuite.utils.generic.GenericClass;
@@ -120,14 +121,12 @@ public class TestClusterGenerator {
 		}
 
 		//instrument the checked out classes, so we can add the diff-lines as coverage goals
-		if(!Properties.target_version.isEmpty()){
-			File f = null;
-			if(Properties.target_version.startsWith("m")){
-				f = new File(Properties.working_dir+"/src/merge");
-			}else{
-				f = new File(Properties.working_dir+"/src/"+Properties.target_version);
+		if(!Properties.target_commit.isEmpty()){
+			List<String> depend_classes = new ArrayList<>();
+			for(Map<String,Set<Integer>> diffLines: DiffLinesExtractor.getInstance().diff()){
+				depend_classes.addAll(diffLines.keySet());
 			}
-			for(String diff_class: f.list()){
+			for(String diff_class: depend_classes){
 				if(diff_class.startsWith(Properties.TARGET_CLASS)){
 					continue;
 				}

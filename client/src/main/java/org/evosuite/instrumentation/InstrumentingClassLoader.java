@@ -35,6 +35,7 @@ import org.evosuite.TestGenerationContext;
 import org.evosuite.classpath.ResourceList;
 import org.evosuite.runtime.instrumentation.RuntimeInstrumentation;
 import org.evosuite.runtime.javaee.db.DBManager;
+import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -178,6 +179,7 @@ public class InstrumentingClassLoader extends ClassLoader {
 	}
 
 	private Class<?> instrumentClass(String fullyQualifiedTargetClass)throws ClassNotFoundException  {
+		LoggingUtils.getEvoLogger().info("Loading class: "+fullyQualifiedTargetClass);
 		String className = fullyQualifiedTargetClass.replace('.', '/');
 		InputStream is = null;
 		try {
@@ -187,18 +189,22 @@ public class InstrumentingClassLoader extends ClassLoader {
 					ResourceList.getInstance(TestGenerationContext.getInstance().getClassLoaderForSUT()).getClassAsStream(fullyQualifiedTargetClass);
 			
 			if (is == null) {
+				LoggingUtils.getEvoLogger().info("is null");
 				throw new ClassNotFoundException("Class '" + className + ".class"
 						+ "' should be in target project, but could not be found!");
 			}
-			
+			LoggingUtils.getEvoLogger().info("the class is not null");
 			byte[] byteBuffer = getTransformedBytes(className,is);
+			LoggingUtils.getEvoLogger().info("transformed");
 			createPackageDefinition(fullyQualifiedTargetClass);
+			LoggingUtils.getEvoLogger().info("created");
 			Class<?> result = defineClass(fullyQualifiedTargetClass, byteBuffer, 0,byteBuffer.length);
 			classes.put(fullyQualifiedTargetClass, result);
 
 			logger.info("Loaded class: " + fullyQualifiedTargetClass);
 			return result;
 		} catch (Throwable t) {
+			LoggingUtils.getEvoLogger().info("Error while Loading class: "+fullyQualifiedTargetClass);
 			logger.info("Error while loading class: "+t);
 			throw new ClassNotFoundException(t.getMessage(), t);
 		} finally {

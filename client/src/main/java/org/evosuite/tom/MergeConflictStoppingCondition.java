@@ -103,18 +103,23 @@ public class MergeConflictStoppingCondition extends StoppingConditionImpl {
     }
 
     private void initClassLoaders() {
-        String jarsPath = Properties.working_dir+"/jars/";
-        if (Properties.target_version.startsWith("m")) {
-            int numParents = Integer.valueOf(Properties.target_version.substring(1));
-            for (int i = 1; i <= numParents; i++) {
-                variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "p" + i));
-            }
-            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "merge"));
-        } else {
-            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "base"));
-            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "merge"));
-            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + Properties.target_version));
+        String jarsPath = Properties.jars_path;
+        for(String mutant: Properties.mutant_commits.split(":")){
+            variantsClassLoaders.add(new VersionsClassLoader(jarsPath+mutant));
         }
+        variantsClassLoaders.add(new VersionsClassLoader(jarsPath+Properties.target_commit));
+
+//        if (Properties.target_version.startsWith("m")) {
+//            int numParents = Integer.valueOf(Properties.target_version.substring(1));
+//            for (int i = 1; i <= numParents; i++) {
+//                variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "p" + i));
+//            }
+//            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "merge"));
+//        } else {
+//            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "base"));
+//            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + "merge"));
+//            variantsClassLoaders.add(new VersionsClassLoader(jarsPath + Properties.target_version));
+//        }
     }
 
     private List<DefaultTestCase> cloneTest(DefaultTestCase testCase) {
@@ -180,8 +185,8 @@ public class MergeConflictStoppingCondition extends StoppingConditionImpl {
                 boolean all_diff_flag = true;
                 for (int i = 0; i < variantsClassLoaders.size() - 1; i++) {
                     boolean diff_flag = false;
-                    for (String depend_class : DiffLinesExtractor.getInstance().getDiffLinesList().get(i).keySet()) {
-                        List<Integer> diffLines = DiffLinesExtractor.getInstance().getDiffLinesList().get(i).get(depend_class);
+                    for (String depend_class : DiffLinesExtractor.getInstance().diff().get(i).keySet()) {
+                        Set<Integer> diffLines = DiffLinesExtractor.getInstance().diff().get(i).get(depend_class);
                         if(diffLines.size()==0){
                             continue;
                         }

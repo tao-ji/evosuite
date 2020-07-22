@@ -22,6 +22,7 @@
  */
 package org.evosuite.setup;
 
+import com.sun.javafx.util.Logging;
 import org.evosuite.PackageInfo;
 import org.evosuite.Properties;
 import org.evosuite.Properties.Criterion;
@@ -37,6 +38,7 @@ import org.evosuite.rmi.ClientServices;
 import org.evosuite.setup.callgraph.CallGraph;
 import org.evosuite.setup.callgraph.CallGraphGenerator;
 import org.evosuite.statistics.RuntimeVariable;
+import org.evosuite.tom.DiffLinesExtractor;
 import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.ClassReader;
@@ -264,13 +266,12 @@ public class DependencyAnalysis {
 	 * @return
 	 */
 	public static boolean shouldAnalyze(String className) {
+		LoggingUtils.getEvoLogger().info("should analyze:"+className);
 	    File f = null;
-		if(Properties.target_version.startsWith("m")){
-			f = new File(Properties.working_dir+"/src/merge");
-		}else{
-			f = new File(Properties.working_dir+"/src/"+Properties.target_version);
+		List<String> depend_classes = new ArrayList<>();
+		for(Map<String,Set<Integer>> diffLines: DiffLinesExtractor.getInstance().diff()){
+		    depend_classes.addAll(diffLines.keySet());
 		}
-		List<String> depend_classes = new ArrayList<>(Arrays.asList(f.list()));
 		if(depend_classes.contains(className)){
 			return true;
 		}
@@ -309,13 +310,11 @@ public class DependencyAnalysis {
 	 */
 	public static boolean shouldInstrument(String className, String methodName) {
 		File f = null;
-		if(Properties.target_version.startsWith("m")){
-			f = new File(Properties.working_dir+"/src/merge");
-		}else{
-			f = new File(Properties.working_dir+"/src/"+Properties.target_version);
-		}
-		List<String> depend_classes = new ArrayList<>(Arrays.asList(f.list()));
 
+		List<String> depend_classes = new ArrayList<>();
+		for(Map<String,Set<Integer>> diffLines: DiffLinesExtractor.getInstance().diff()){
+			depend_classes.addAll(diffLines.keySet());
+		}
 		if(depend_classes.contains(className)){
 			return true;
 		}

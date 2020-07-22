@@ -251,7 +251,7 @@ public class TestSuiteGenerator {
 
 		TestSuiteChromosome testCases = generateTests();
 
-		if(Properties.target_version.length()>0){
+		if(Properties.target_commit.length()>0){
 		    //remove unstable tests
 			RevealConflictsTests.getInstance().checkAgain();
 			testCases.clearTests();
@@ -676,10 +676,10 @@ public class TestSuiteGenerator {
 		ClientServices.track(RuntimeVariable.NumUnstableTests, numUnstable);
 		Properties.USE_SEPARATE_CLASSLOADER = junitSeparateClassLoader;
 
-		if(!Properties.target_version.isEmpty() && testCases.size()>0){
+		if(!Properties.target_commit.isEmpty() && testCases.size()>0){
 			Path file = Paths.get(Properties.REPORT_DIR+File.separator+"merge_conflict_cases");
 			List<String> lines = new ArrayList<>();
-			lines.add(Properties.target_version+":"+
+			lines.add(Properties.target_commit+":"+
 					Properties.TARGET_CLASS+":"+
 					Properties.TARGET_METHOD_PREFIX+":"+testCases.size());
 			try {
@@ -759,10 +759,10 @@ public class TestSuiteGenerator {
 			suiteWriter.insertTests(tests);
 
 			String name = Properties.TARGET_CLASS.substring(Properties.TARGET_CLASS.lastIndexOf(".") + 1);
-			if(!Properties.target_version.isEmpty()){
+			if(!Properties.target_commit.isEmpty()){
 			    // we add the "(" to rule out other methods
 				name += ("_"+Properties.TARGET_METHOD_PREFIX.replace("(",""));
-				name += ("_"+Properties.target_version);
+				name += ("_"+Properties.target_commit);
 			}
 			String testDir = Properties.TEST_DIR;
 

@@ -28,15 +28,17 @@ public class VersionsClassLoader extends ClassLoader{
     private void init(String path){
         File jarsDir = new File(path);
         for(File jar: jarsDir.listFiles()){
-            try {
-                InputStream in = new BufferedInputStream(new FileInputStream(jar));
-                JarInputStream jarInput = new JarInputStream(in);
-                JarEntry entry = jarInput.getNextJarEntry();
-                while (entry != null) {
-                    copyInputStream(jarInput, entry.getName());
-                    entry = jarInput.getNextJarEntry();
+            if(jar.getName().endsWith(".jar")&&!jar.getName().endsWith("tests.jar")){
+                try {
+                    InputStream in = new BufferedInputStream(new FileInputStream(jar));
+                    JarInputStream jarInput = new JarInputStream(in);
+                    JarEntry entry = jarInput.getNextJarEntry();
+                    while (entry != null) {
+                        copyInputStream(jarInput, entry.getName());
+                        entry = jarInput.getNextJarEntry();
+                    }
+                }catch (Exception e) {
                 }
-            }catch (Exception e) {
             }
         }
     }
