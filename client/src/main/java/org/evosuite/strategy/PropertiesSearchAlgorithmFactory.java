@@ -25,14 +25,9 @@ import org.evosuite.ga.Chromosome;
 import org.evosuite.ga.populationlimit.IndividualPopulationLimit;
 import org.evosuite.ga.populationlimit.PopulationLimit;
 import org.evosuite.ga.populationlimit.SizePopulationLimit;
-import org.evosuite.ga.stoppingconditions.MaxFitnessEvaluationsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxGenerationStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxStatementsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxTestsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxTimeStoppingCondition;
-import org.evosuite.ga.stoppingconditions.StoppingCondition;
-import org.evosuite.ga.stoppingconditions.TimeDeltaStoppingCondition;
+import org.evosuite.ga.stoppingconditions.*;
 import org.evosuite.testsuite.StatementsPopulationLimit;
+import org.evosuite.tom.MergeConflictStoppingCondition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +59,8 @@ public abstract class PropertiesSearchAlgorithmFactory<T extends Chromosome>  {
 	protected StoppingCondition getStoppingCondition() {
 		logger.info("Setting stopping condition: " + Properties.STOPPING_CONDITION);
 		switch (Properties.STOPPING_CONDITION) {
+			case MERGECONFLICT:
+				return new MergeConflictStoppingCondition();
 		case MAXGENERATIONS:
 			return new MaxGenerationStoppingCondition();
 		case MAXFITNESSEVALUATIONS:

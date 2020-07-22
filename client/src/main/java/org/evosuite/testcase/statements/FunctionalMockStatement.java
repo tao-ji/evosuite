@@ -127,7 +127,8 @@ public class FunctionalMockStatement extends EntityWithParametersStatement {
     public FunctionalMockStatement(TestCase tc, VariableReference retval, GenericClass targetClass) throws IllegalArgumentException {
         super(tc, retval);
         Inputs.checkNull(targetClass);
-        this.targetClass = targetClass;
+        this.targetClass = new GenericClass(targetClass);
+//        this.targetClass = targetClass;
         mockedMethods = new ArrayList<>();
         methodParameters = new LinkedHashMap<>();
         checkTarget();
@@ -145,7 +146,8 @@ public class FunctionalMockStatement extends EntityWithParametersStatement {
             throw new IllegalArgumentException("Mismatch between raw type " + rawType + " and target class " + targetClass);
         }
 
-        this.targetClass = targetClass;
+        this.targetClass = new GenericClass(targetClass);
+//        this.targetClass = targetClass;
         mockedMethods = new ArrayList<>();
         methodParameters = new LinkedHashMap<>();
         checkTarget();
@@ -559,7 +561,12 @@ public class FunctionalMockStatement extends EntityWithParametersStatement {
             copy.parameters.add(r.copy(newTestCase, offset));
         }
 
-        copy.listener = this.listener; //no need to clone, as only read, and created new instance at each new execution
+        //copy.listener = this.listener; //no need to clone, as only read, and created new instance at each new execution
+        if(this.listener!=null){
+            copy.listener = this.listener.clone();
+        }else{
+            copy.listener = null;
+        }
 
         for (MethodDescriptor md : this.mockedMethods) {
             copy.mockedMethods.add(md.getCopy());

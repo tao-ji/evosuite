@@ -63,7 +63,7 @@ public class LineCoverageSuiteFitness extends TestSuiteFitnessFunction {
     private Set<Integer> branchesToCoverFalse = new LinkedHashSet<>();
     private Set<Integer> branchesToCoverBoth  = new LinkedHashSet<>();
 
-	public LineCoverageSuiteFitness() {
+    public LineCoverageSuiteFitness(){
 		@SuppressWarnings("unused")
 		String prefix = Properties.TARGET_CLASS_PREFIX;
 
@@ -73,6 +73,27 @@ public class LineCoverageSuiteFitness extends TestSuiteFitnessFunction {
 //		}
 
 		List<LineCoverageTestFitness> goals = new LineCoverageFactory().getCoverageGoals();
+		for (LineCoverageTestFitness goal : goals) {
+			lineGoals.put(goal.getLine(), goal);
+			if(Properties.TEST_ARCHIVE)
+				Archive.getArchiveInstance().addTarget(goal);
+		}
+		this.numLines = lineGoals.size();
+		logger.info("Total line coverage goals: " + this.numLines);
+
+		initializeControlDependencies();
+	}
+
+	public LineCoverageSuiteFitness(boolean diff) {
+		@SuppressWarnings("unused")
+		String prefix = Properties.TARGET_CLASS_PREFIX;
+
+		/* TODO: Would be nice to use a prefix here */
+//		for(String className : LinePool.getKnownClasses()) {
+//			lines.addAll(LinePool.getLines(className));
+//		}
+
+		List<LineCoverageTestFitness> goals = new LineCoverageFactory(diff).getCoverageGoals();
 		for (LineCoverageTestFitness goal : goals) {
 			lineGoals.put(goal.getLine(), goal);
 			if(Properties.TEST_ARCHIVE)

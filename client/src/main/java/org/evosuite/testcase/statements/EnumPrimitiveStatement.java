@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.evosuite.testcase.TestCase;
 import org.evosuite.testcase.execution.ExecutionTracer;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.generic.GenericClass;
 import org.evosuite.utils.Randomness;
 import org.objectweb.asm.Type;
@@ -238,8 +239,10 @@ public class EnumPrimitiveStatement<T extends Enum<T>> extends PrimitiveStatemen
 				value = constants[pos];
 			}
 		} catch (ClassNotFoundException e) {
+			ClassLoaderChangeListener.success=false;
 			logger.warn("Class not found - keeping old class loader ", e);
 		} catch (SecurityException e) {
+			ClassLoaderChangeListener.success=false;
 			logger.warn("Class not found - keeping old class loader ", e);
 		}
 		super.changeClassLoader(loader);

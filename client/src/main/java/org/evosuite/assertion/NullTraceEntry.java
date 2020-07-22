@@ -76,7 +76,8 @@ public class NullTraceEntry implements OutputTraceEntry {
 
 		if (other instanceof NullTraceEntry) {
 			NullTraceEntry otherEntry = (NullTraceEntry) other;
-			if (var.equals(otherEntry.var) && otherEntry.isNull != isNull) {
+			//if (var.equals(otherEntry.var) && otherEntry.isNull != isNull) {
+			if (var.getName().equals(otherEntry.var.getName()) && otherEntry.isNull != isNull) {
 				NullAssertion assertion = new NullAssertion();
 				assertion.value = isNull;
 				assertion.source = var;

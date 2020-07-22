@@ -70,6 +70,16 @@ public class TestChromosome extends ExecutableChromosome {
 	/** Secondary objectives used during ranking */
 	private static final List<SecondaryObjective<TestChromosome>> secondaryObjectives = new ArrayList<SecondaryObjective<TestChromosome>>();
 
+	private boolean mergeConflict = false;
+
+	public void setConflict(){
+		mergeConflict=true;
+	}
+
+	public boolean isConflict(){
+		return mergeConflict;
+	}
+
 	/**
 	 * <p>
 	 * setTestCase
@@ -110,6 +120,7 @@ public class TestChromosome extends ExecutableChromosome {
 	public void setChanged(boolean changed) {
 		super.setChanged(changed);
 		if (changed) {
+		    mergeConflict=false;
 			clearCachedResults();
 		}
 	}
@@ -123,6 +134,9 @@ public class TestChromosome extends ExecutableChromosome {
 	public Chromosome clone() {
 		TestChromosome c = new TestChromosome();
 		c.test = test.clone();
+		if(mergeConflict){
+			c.setConflict();
+		}
 		c.setFitnessValues(getFitnessValues());
 		c.setPreviousFitnessValues(getPreviousFitnessValues());
 		c.copyCachedResults(this);

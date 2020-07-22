@@ -157,6 +157,8 @@ public class FitnessFunctions {
 			return new InputCoverageSuiteFitness();
 		case TRYCATCH:
 			return new TryCatchCoverageSuiteFitness();
+		case DIFFLINE:
+			return new LineCoverageSuiteFitness(true);
 		default:
 			logger.warn("No TestSuiteFitnessFunction defined for {}; using default one (BranchCoverageSuiteFitness)", Arrays.toString(Properties.CRITERION));
 			return new BranchCoverageSuiteFitness();
@@ -218,6 +220,8 @@ public class FitnessFunctions {
 			return new InputCoverageFactory();
 		case TRYCATCH:
 			return new TryCatchCoverageFactory();
+		case DIFFLINE:
+			return new LineCoverageFactory(true);
 		default:
 			logger.warn("No TestFitnessFactory defined for " + crit
 			        + " using default one (BranchCoverageFactory)");
@@ -282,6 +286,8 @@ public class FitnessFunctions {
 				return InputCoverageTestFitness.class;
 		case TRYCATCH:
 				return TryCatchCoverageTestFitness.class;
+		case DIFFLINE:
+				return LineCoverageTestFitness.class;
 		default:
 				throw new RuntimeException("No criterion defined for " + criterion.name());
 		}

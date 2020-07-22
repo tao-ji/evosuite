@@ -28,22 +28,15 @@ import org.evosuite.Properties.Algorithm;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.FitnessFunctions;
 import org.evosuite.coverage.TestFitnessFactory;
+import org.evosuite.ga.stoppingconditions.*;
 import org.evosuite.graphs.cfg.CFGMethodAdapter;
 import org.evosuite.rmi.ClientServices;
-import org.evosuite.ga.FitnessFunction;
-import org.evosuite.ga.stoppingconditions.GlobalTimeStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxFitnessEvaluationsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxGenerationStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxStatementsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxTestsStoppingCondition;
-import org.evosuite.ga.stoppingconditions.MaxTimeStoppingCondition;
-import org.evosuite.ga.stoppingconditions.StoppingCondition;
-import org.evosuite.ga.stoppingconditions.ZeroFitnessStoppingCondition;
 import org.evosuite.setup.TestCluster;
 import org.evosuite.statistics.RuntimeVariable;
 import org.evosuite.testcase.TestFitnessFunction;
 import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.testsuite.TestSuiteFitnessFunction;
+import org.evosuite.tom.MergeConflictStoppingCondition;
 import org.evosuite.utils.LoggingUtils;
 
 /**
@@ -161,6 +154,8 @@ public abstract class TestGenerationStrategy {
 	 */
 	protected StoppingCondition getStoppingCondition() {
 		switch (Properties.STOPPING_CONDITION) {
+			case MERGECONFLICT:
+				return new MergeConflictStoppingCondition();
 		case MAXGENERATIONS:
 			return new MaxGenerationStoppingCondition();
 		case MAXFITNESSEVALUATIONS:

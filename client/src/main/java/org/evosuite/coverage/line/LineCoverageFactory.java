@@ -19,18 +19,21 @@
  */
 package org.evosuite.coverage.line;
 
+import java.io.File;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.coverage.MethodNameMatcher;
 import org.evosuite.graphs.cfg.BytecodeInstruction;
 import org.evosuite.instrumentation.LinePool;
+import org.evosuite.tom.DiffLinesExtractor;
 import org.evosuite.testsuite.AbstractFitnessFactory;
+import org.evosuite.utils.LoggingUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.rmi.runtime.Log;
 
 /**
  * <p>
@@ -62,6 +65,35 @@ public class LineCoverageFactory extends
 		}
 	}
 
+	private boolean diff=false;
+
+	public LineCoverageFactory(){
+		this.diff=false;
+	}
+
+	public LineCoverageFactory(boolean diff){
+		this.diff=diff;
+		String versSrcPath = Properties.working_dir+"/src";
+//		String targetClassName = Properties.getTargetClassAndDontInitialise().getName();
+
+		List<String> filePaths = new ArrayList<>();
+
+		if(Properties.target_version.startsWith("m")){
+			int numVersions = Integer.valueOf(Properties.target_version.substring(1));
+			for(int i=1;i<=numVersions;i++){
+				filePaths.add(versSrcPath+File.separator+"p"+i);
+				}
+				filePaths.add(versSrcPath+File.separator+"merge");
+		}else{
+		    filePaths.add(versSrcPath+File.separator+"base");
+			filePaths.add(versSrcPath+File.separator+"merge");
+			filePaths.add(versSrcPath+File.separator+Properties.target_version);
+		}
+
+		DiffLinesExtractor.getInstance().setFilePaths(filePaths);
+		DiffLinesExtractor.getInstance().diff();
+
+	}
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,23 +107,84 @@ public class LineCoverageFactory extends
 
 		long start = System.currentTimeMillis();
 
-		for(String className : LinePool.getKnownClasses()) {
-			// Only lines in CUT
-			if(!isCUT(className)) 
-				continue;
+		if(diff){
+			List<Map<String,List<Integer>>> diffLinesList = DiffLinesExtractor.getInstance().getDiffLinesList();
+			LoggingUtils.getEvoLogger().info("extracted lines:"+diffLinesList.toString());
+			for(String className : LinePool.getKnownClasses()) {
+				LoggingUtils.getEvoLogger().info("known class:" + className);
 
-			for(String methodName : LinePool.getKnownMethodsFor(className)) {
-				if(isEnumDefaultConstructor(className, methodName)) {
-					continue;
+				//className may be the name of the inner class
+				Set<Integer> diffLines = new HashSet<>();
+				for (Map<String, List<Integer>> delta : diffLinesList) {
+					for (String key : delta.keySet()) {
+						if (className.startsWith(key)) {
+							diffLines.addAll(delta.get(key));
+						}
+					}
 				}
-				if (!matcher.methodMatches(methodName)) {
-					logger.info("Method {} does not match criteria. ",methodName);
-					continue;
+
+				for (String methodName : LinePool.getKnownMethodsFor(className)) {
+					if (isEnumDefaultConstructor(className, methodName)) {
+						continue;
+					}
+					Set<Integer> lines = LinePool.getLines(className, methodName);
+					int begin = Collections.min(lines);
+					int end = Collections.max(lines);
+//					if (diffLines.size() > 0) {
+//						LoggingUtils.getEvoLogger().info(className + "." + methodName);
+//						LoggingUtils.getEvoLogger().info(lines.toString());
+//					}
+					// the lines may skip some lines in the method body, we compare the line with the range
+					Set<Integer> line_goals = new HashSet<>();
+					for (Integer diffline : diffLines) {
+						if (diffline.intValue() >= begin && diffline.intValue() <= end) {
+						    if(!lines.contains(diffline)){
+						    	int i=0;
+						    	boolean flag=false;
+						    	while(true){
+						    		if(lines.contains(diffline.intValue()-i)){
+						    			flag=true;
+						    			line_goals.add(diffline.intValue()-i);
+									}
+									if(lines.contains(diffline.intValue()+i)){
+										flag=true;
+										line_goals.add(diffline.intValue()+i);
+									}
+									if(flag){
+										break;
+									}
+									i++;
+								}
+							}else {
+						    	line_goals.add(diffline);
+							}
+						}
+					}
+					for(Integer line_num: line_goals){
+						goals.add(new LineCoverageTestFitness(className,methodName,line_num));
+					}
 				}
-				Set<Integer> lines = LinePool.getLines(className, methodName);
-				for (Integer line : lines) {
-					logger.info("Adding goal for method " + className + "."+methodName+", Line " + line + ".");
-					goals.add(new LineCoverageTestFitness(className, methodName, line));
+			}
+		}
+		else{
+			for(String className : LinePool.getKnownClasses()) {
+				// Only lines in CUT
+				if(!isCUT(className))
+					continue;
+
+				for(String methodName : LinePool.getKnownMethodsFor(className)) {
+					if(isEnumDefaultConstructor(className, methodName)) {
+						continue;
+					}
+					Set<Integer> lines = LinePool.getLines(className, methodName);
+					if (!matcher.methodMatches(methodName)) {
+						logger.info("Method {} does not match criteria. ",methodName);
+						continue;
+					}
+					for (Integer line : lines) {
+						logger.info("Adding goal for method " + className + "." + methodName + ", Line " + line + ".");
+						goals.add(new LineCoverageTestFitness(className, methodName, line));
+					}
 				}
 			}
 		}

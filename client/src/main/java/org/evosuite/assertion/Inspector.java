@@ -30,6 +30,7 @@ import org.evosuite.TestGenerationContext;
 import org.evosuite.runtime.LoopCounter;
 import org.evosuite.runtime.sandbox.Sandbox;
 import org.evosuite.setup.TestClusterUtils;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.Type;
 
@@ -241,9 +242,12 @@ public class Inspector implements Serializable {
 				}
 			}
 			LoggingUtils.getEvoLogger().info("Method not found - keeping old class loader ");
+			ClassLoaderChangeListener.success=false;
 		} catch (ClassNotFoundException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ", e);
 		} catch (SecurityException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",e);
 		}
 	}

@@ -22,6 +22,7 @@ package org.evosuite;
 import org.evosuite.Properties.AssertionStrategy;
 import org.evosuite.Properties.Criterion;
 import org.evosuite.Properties.TestFactory;
+import org.evosuite.assertion.Assertion;
 import org.evosuite.classpath.ClassPathHandler;
 import org.evosuite.classpath.ResourceList;
 import org.evosuite.contracts.ContractChecker;
@@ -68,6 +69,7 @@ import org.evosuite.testcase.statements.StringPrimitiveStatement;
 import org.evosuite.testcase.statements.numeric.BooleanPrimitiveStatement;
 import org.evosuite.testcase.variable.VariableReference;
 import org.evosuite.testsuite.*;
+import org.evosuite.tom.RevealConflictsTests;
 import org.evosuite.utils.ArrayUtil;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.generic.GenericMethod;
@@ -75,7 +77,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.NumberFormat;
 import java.util.*;
 
@@ -243,6 +251,21 @@ public class TestSuiteGenerator {
 
 		TestSuiteChromosome testCases = generateTests();
 
+		if(Properties.target_version.length()>0){
+		    //remove unstable tests
+			RevealConflictsTests.getInstance().checkAgain();
+			testCases.clearTests();
+			if(RevealConflictsTests.getInstance().getTests().size()>0){
+				for(TestChromosome foundTest: RevealConflictsTests.getInstance().getTests()){
+					testCases.addTest(foundTest);
+				}
+			}
+
+			Properties.COVERAGE=false;
+			Properties.MINIMIZE=false;
+			Properties.ASSERTIONS=false;
+		}
+
 		// As post process phases such as minimisation, coverage analysis, etc., may call getFitness()
 		// of each fitness function, which may try to update the Archive, in here we explicitly disable
 		// Archive to avoid any problem and at the same time to improve the performance of post process
@@ -251,7 +274,9 @@ public class TestSuiteGenerator {
 
 		TestGenerationResult result = null;
 		if (ClientProcess.DEFAULT_CLIENT_NAME.equals(ClientProcess.getIdentifier())) {
+			LoggingUtils.getEvoLogger().info("* There are a total of "+testCases.getTestChromosomes().size()+" tests generated");
 			postProcessTests(testCases);
+			LoggingUtils.getEvoLogger().info("* After post-processing: There are a total of "+testCases.getTestChromosomes().size()+" tests generated");
 			ClientServices.getInstance().getClientNode().publishPermissionStatistics();
 			PermissionStatistics.getInstance().printStatistics(LoggingUtils.getEvoLogger());
 
@@ -555,7 +580,6 @@ public class TestSuiteGenerator {
 		else if (Properties.JUNIT_TESTS && Properties.JUNIT_CHECK) {
 			compileAndCheckTests(testSuite);
 		}
-
 		if (Properties.SERIALIZE_REGRESSION_TEST_SUITE) {
 			RegressionSuiteSerializer.appendToRegressionTestSuite(testSuite);
 		}
@@ -652,6 +676,25 @@ public class TestSuiteGenerator {
 		ClientServices.track(RuntimeVariable.NumUnstableTests, numUnstable);
 		Properties.USE_SEPARATE_CLASSLOADER = junitSeparateClassLoader;
 
+		if(!Properties.target_version.isEmpty() && testCases.size()>0){
+			Path file = Paths.get(Properties.REPORT_DIR+File.separator+"merge_conflict_cases");
+			List<String> lines = new ArrayList<>();
+			lines.add(Properties.target_version+":"+
+					Properties.TARGET_CLASS+":"+
+					Properties.TARGET_METHOD_PREFIX+":"+testCases.size());
+			try {
+				if(!file.toFile().exists()) {
+				    if(!file.toFile().getParentFile().exists()){
+						file.toFile().getParentFile().mkdirs();
+					}
+					file.toFile().createNewFile();
+				}
+				Files.write(file, lines, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private static int checkAllTestsIfTime(List<TestCase> testCases, long delta) {
@@ -716,6 +759,11 @@ public class TestSuiteGenerator {
 			suiteWriter.insertTests(tests);
 
 			String name = Properties.TARGET_CLASS.substring(Properties.TARGET_CLASS.lastIndexOf(".") + 1);
+			if(!Properties.target_version.isEmpty()){
+			    // we add the "(" to rule out other methods
+				name += ("_"+Properties.TARGET_METHOD_PREFIX.replace("(",""));
+				name += ("_"+Properties.target_version);
+			}
 			String testDir = Properties.TEST_DIR;
 
 			LoggingUtils.getEvoLogger().info("* " + ClientProcess.getPrettyPrintIdentifier() + "Writing JUnit test case '"

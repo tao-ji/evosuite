@@ -34,6 +34,7 @@ import org.evosuite.setup.TestClusterGenerator;
 import org.evosuite.setup.TestUsageChecker;
 
 import com.googlecode.gentyref.GenericTypeReflector;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.LoggingUtils;
 
 /**
@@ -236,12 +237,15 @@ public class GenericField extends GenericAccessibleObject<GenericField> {
 			this.field = newClass.getDeclaredField(field.getName());
 			this.field.setAccessible(true);
 		} catch (ClassNotFoundException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",
 			                                 e);
 		} catch (SecurityException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",
 			                                 e);
 		} catch (NoSuchFieldException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Field " + field.getName()
 			                                         + " not found in class "
 			                                         + field.getDeclaringClass());

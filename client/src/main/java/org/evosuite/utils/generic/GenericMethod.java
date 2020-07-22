@@ -42,6 +42,7 @@ import org.evosuite.setup.TestUsageChecker;
 import org.evosuite.testcase.variable.VariableReference;
 
 import com.googlecode.gentyref.GenericTypeReflector;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.LoggingUtils;
 
 /**
@@ -410,10 +411,13 @@ public class GenericMethod extends GenericAccessibleObject<GenericMethod> {
 				}
 			}
 			LoggingUtils.getEvoLogger().info("Method not found - keeping old class loader ");
+			ClassLoaderChangeListener.success=false;
 		} catch (ClassNotFoundException e) {
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ", e);
+			ClassLoaderChangeListener.success=false;
 		} catch (SecurityException e) {
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",e);
+			ClassLoaderChangeListener.success=false;
 		}
 	}
 

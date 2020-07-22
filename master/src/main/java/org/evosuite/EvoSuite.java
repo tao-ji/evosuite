@@ -36,16 +36,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.evosuite.classpath.ClassPathHacker;
-import org.evosuite.executionmode.Continuous;
-import org.evosuite.executionmode.Help;
-import org.evosuite.executionmode.ListClasses;
-import org.evosuite.executionmode.WriteDependencies;
-import org.evosuite.executionmode.ListParameters;
-import org.evosuite.executionmode.MeasureCoverage;
-import org.evosuite.executionmode.PrintStats;
-import org.evosuite.executionmode.Setup;
-import org.evosuite.executionmode.TestGeneration;
+import org.evosuite.executionmode.*;
 import org.evosuite.junit.writer.TestSuiteWriterUtils;
+import org.evosuite.executionmode.TestMerge;
 import org.evosuite.runtime.sandbox.MSecurityManager;
 import org.evosuite.runtime.util.JavaExecCmdUtil;
 import org.evosuite.setup.InheritanceTree;
@@ -130,6 +123,10 @@ public class EvoSuite {
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(options, args);
+
+            if (line.hasOption(TestMerge.NAME)){
+                return TestMerge.execute(options,javaOpts,line);
+            }
 
             if (!line.hasOption(Setup.NAME)) {
                 /*

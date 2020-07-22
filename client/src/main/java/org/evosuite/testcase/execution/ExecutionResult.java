@@ -434,6 +434,7 @@ public class ExecutionResult implements Cloneable {
 		copy.regressionObjectDistance = regressionObjectDistance;
 		copy.inputGoals = new LinkedHashMap<>(inputGoals);
 		copy.outputGoals = new LinkedHashMap<>(outputGoals);
+		copy.scope = scope;
 		for (Class<?> clazz : traces.keySet()) {
 			copy.traces.put(clazz, traces.get(clazz).clone());
 		}
@@ -489,6 +490,16 @@ public class ExecutionResult implements Cloneable {
 
 	public Map<Integer, Set<OutputCoverageGoal>> getOutputGoals() {
 		return outputGoals;
+	}
+
+	private Scope scope;
+
+	public void setScope(Scope scope){
+		this.scope = scope;
+	}
+
+	public Scope getScope(){
+		return this.scope;
 	}
 
 }

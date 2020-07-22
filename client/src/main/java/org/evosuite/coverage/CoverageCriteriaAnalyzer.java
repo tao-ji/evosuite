@@ -178,6 +178,8 @@ public class CoverageCriteriaAnalyzer {
                 return RuntimeVariable.BranchCoverage;
             case TRYCATCH:
                 return RuntimeVariable.TryCatchCoverage;
+            case DIFFLINE:
+                return RuntimeVariable.DiffLineCoverage;
             default:
                 throw new RuntimeException("Criterion not supported: " + criterion);
 
@@ -341,6 +343,8 @@ public class CoverageCriteriaAnalyzer {
             case REGRESSIONTESTS:
             case TRYCATCH:
                 return null;
+            case DIFFLINE:
+                return RuntimeVariable.DiffLineCoverageBitString;
             default:
                 logger.debug("Criterion not supported: " + criterion);
                 return null;

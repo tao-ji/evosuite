@@ -38,6 +38,7 @@ import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.ga.ConstructionFailedException;
 import org.evosuite.seeding.CastClassManager;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.ParameterizedTypeImpl;
 import org.slf4j.Logger;
@@ -396,9 +397,11 @@ public class GenericClass implements Serializable {
 				this.type = addTypeParameters(rawClass); //GenericTypeReflector.addWildcardParameters(raw_class);
 			}
 		} catch (ClassNotFoundException e) {
+			ClassLoaderChangeListener.success=false;
 			logger.warn("Class not found: " + rawClass + " - keeping old class loader ",
 			            e);
 		} catch (SecurityException e) {
+			ClassLoaderChangeListener.success=false;
 			logger.warn("Class not found: " + rawClass + " - keeping old class loader ",
 			            e);
 		}

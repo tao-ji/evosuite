@@ -44,6 +44,11 @@ import org.objectweb.asm.Opcodes;
  */
 public class TestSuiteGeneratorHelper {
 
+  private static boolean updateState=true;
+
+  public static void dontUpdateState(){
+    updateState=false;
+  }
   static void printTestCriterion(Criterion criterion) {
     switch (criterion) {
       case WEAKMUTATION:
@@ -112,6 +117,9 @@ public class TestSuiteGeneratorHelper {
         break;
       case REGRESSION:
         LoggingUtils.getEvoLogger().info("  - Regression");
+        break;
+      case DIFFLINE:
+        LoggingUtils.getEvoLogger().info("  - DiffLine Coverage");
         break;
       default:
         throw new IllegalArgumentException("Unrecognized criterion: " + criterion);

@@ -22,6 +22,7 @@
  */
 package org.evosuite.setup;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -114,6 +115,26 @@ public class TestClusterGenerator {
 					}
 				} catch (ClassNotFoundException e) {
 					logger.info("Class not found: " + callTreeClass + ": " + e);
+				}
+			}
+		}
+
+		//instrument the checked out classes, so we can add the diff-lines as coverage goals
+		if(!Properties.target_version.isEmpty()){
+			File f = null;
+			if(Properties.target_version.startsWith("m")){
+				f = new File(Properties.working_dir+"/src/merge");
+			}else{
+				f = new File(Properties.working_dir+"/src/"+Properties.target_version);
+			}
+			for(String diff_class: f.list()){
+				if(diff_class.startsWith(Properties.TARGET_CLASS)){
+					continue;
+				}
+				try {
+					TestGenerationContext.getInstance().getClassLoaderForSUT().loadClass(diff_class);
+				} catch (ClassNotFoundException e) {
+					logger.info("Class not found: " + diff_class + ": " + e);
 				}
 			}
 		}

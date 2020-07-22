@@ -19,6 +19,7 @@
  */
 package org.evosuite;
 
+import org.apache.commons.lang3.builder.Diff;
 import org.evosuite.classpath.ClassPathHandler;
 import org.evosuite.lm.MutationType;
 import org.evosuite.regression.RegressionMeasure;
@@ -26,6 +27,8 @@ import org.evosuite.runtime.LoopCounter;
 import org.evosuite.runtime.Runtime;
 import org.evosuite.runtime.RuntimeSettings;
 import org.evosuite.runtime.sandbox.Sandbox;
+import org.evosuite.testcase.TestChromosome;
+import org.evosuite.testsuite.TestSuiteChromosome;
 import org.evosuite.utils.LoggingUtils;
 import org.evosuite.utils.FileIOUtils;
 import org.slf4j.Logger;
@@ -39,10 +42,7 @@ import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Central property repository. All global parameters of EvoSuite should be
@@ -95,6 +95,11 @@ public class Properties {
 
 	// ---------------------------------------------------------------
 	// Test sequence creation
+	@Parameter(key= "working_dir", group = "Test Creation", description = "the working dir contains the src and jars")
+	public static String working_dir = "";
+	@Parameter(key = "target_version", group = "Test Creation", description = "the target version")
+	public static String target_version = "";
+
 	@Parameter(key = "test_excludes", group = "Test Creation", description = "File containing methods that should not be used in testing")
 	public static String TEST_EXCLUDES = "test.excludes";
 
@@ -588,6 +593,7 @@ public class Properties {
 		MAXSTATEMENTS, MAXTESTS,
         /** Max time in seconds */ MAXTIME,
         MAXGENERATIONS, MAXFITNESSEVALUATIONS, TIMEDELTA
+		,MERGECONFLICT
 	}
 
 
@@ -1412,13 +1418,13 @@ public class Properties {
 		EXCEPTION, DEFUSE, ALLDEFS, BRANCH, CBRANCH, STRONGMUTATION, WEAKMUTATION,
 		MUTATION, STATEMENT, RHO, AMBIGUITY, IBRANCH, READABILITY,
         ONLYBRANCH, ONLYMUTATION, METHODTRACE, METHOD, METHODNOEXCEPTION, LINE, ONLYLINE, OUTPUT, INPUT,
-        REGRESSION,	REGRESSIONTESTS, TRYCATCH
+        REGRESSION,	REGRESSIONTESTS, TRYCATCH, DIFFLINE
 	}
 
     @Parameter(key = "criterion", group = "Runtime", description = "Coverage criterion. Can define more than one criterion by using a ':' separated list")
     public static Criterion[] CRITERION = new Criterion[] {
             //these are basic criteria that should be always on by default
-            Criterion.LINE, Criterion.BRANCH, Criterion.EXCEPTION, Criterion.WEAKMUTATION, Criterion.OUTPUT, Criterion.METHOD, Criterion.METHODNOEXCEPTION, Criterion.CBRANCH  };
+            Criterion.LINE, Criterion.BRANCH, Criterion.EXCEPTION, Criterion.WEAKMUTATION, Criterion.OUTPUT, Criterion.METHOD, Criterion.METHODNOEXCEPTION, Criterion.CBRANCH, Criterion.DIFFLINE  };
 
 
     /** Cache target class */
@@ -2499,6 +2505,5 @@ public class Properties {
 		boolean isRegression = (STRATEGY == Strategy.REGRESSION);
 		return isRegression;
 	}
-
 
 }

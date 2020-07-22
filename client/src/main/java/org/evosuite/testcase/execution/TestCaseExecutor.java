@@ -35,6 +35,7 @@ import org.evosuite.Properties;
 import org.evosuite.TestGenerationContext;
 import org.evosuite.ga.stoppingconditions.MaxStatementsStoppingCondition;
 import org.evosuite.ga.stoppingconditions.MaxTestsStoppingCondition;
+import org.evosuite.tom.VersionsClassLoader;
 import org.evosuite.runtime.LoopCounter;
 import org.evosuite.runtime.Runtime;
 import org.evosuite.runtime.javaee.db.DBManager;
@@ -332,6 +333,7 @@ public class TestCaseExecutor implements ThreadFactory {
 			TestGenerationContext.getInstance().goingToExecuteSUTCode();
 			try {
 				result = handler.execute(callable, executor, timeout, Properties.CPU_TIMEOUT);
+				result.setScope(scope);
 			} finally {
 				Sandbox.doneWithExecutingSUTCode();
 				TestGenerationContext.getInstance().doneWithExecutingSUTCode();

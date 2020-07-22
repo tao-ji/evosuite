@@ -50,7 +50,6 @@ public class SimpleMutationAssertionGenerator extends MutationAssertionGenerator
 
 	private final static Logger logger = LoggerFactory.getLogger(SimpleMutationAssertionGenerator.class);
 
-
 	@Override
 	public void addAssertions(TestSuiteChromosome suite) {
 		

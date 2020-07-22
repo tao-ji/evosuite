@@ -38,11 +38,13 @@ import org.evosuite.setup.callgraph.CallGraph;
 import org.evosuite.setup.callgraph.CallGraphGenerator;
 import org.evosuite.statistics.RuntimeVariable;
 import org.evosuite.utils.ArrayUtil;
+import org.evosuite.utils.LoggingUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -262,6 +264,16 @@ public class DependencyAnalysis {
 	 * @return
 	 */
 	public static boolean shouldAnalyze(String className) {
+	    File f = null;
+		if(Properties.target_version.startsWith("m")){
+			f = new File(Properties.working_dir+"/src/merge");
+		}else{
+			f = new File(Properties.working_dir+"/src/"+Properties.target_version);
+		}
+		List<String> depend_classes = new ArrayList<>(Arrays.asList(f.list()));
+		if(depend_classes.contains(className)){
+			return true;
+		}
 		// Always analyze if it is a target class
 		if (isTargetClassName(className))
 			return true;
@@ -296,6 +308,17 @@ public class DependencyAnalysis {
 	 * @return
 	 */
 	public static boolean shouldInstrument(String className, String methodName) {
+		File f = null;
+		if(Properties.target_version.startsWith("m")){
+			f = new File(Properties.working_dir+"/src/merge");
+		}else{
+			f = new File(Properties.working_dir+"/src/"+Properties.target_version);
+		}
+		List<String> depend_classes = new ArrayList<>(Arrays.asList(f.list()));
+
+		if(depend_classes.contains(className)){
+			return true;
+		}
 		// Always analyze if it is a target class
 		if (isTargetClassName(className))
 			return true;

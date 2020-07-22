@@ -39,6 +39,7 @@ import org.evosuite.setup.TestUsageChecker;
 import org.evosuite.testcase.variable.VariableReference;
 
 import com.googlecode.gentyref.GenericTypeReflector;
+import org.evosuite.tom.ClassLoaderChangeListener;
 import org.evosuite.utils.LoggingUtils;
 
 /**
@@ -92,9 +93,11 @@ public class GenericConstructor extends GenericAccessibleObject<GenericConstruct
 				}
 			}
 		} catch (ClassNotFoundException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",
 			                                 e);
 		} catch (SecurityException e) {
+			ClassLoaderChangeListener.success=false;
 			LoggingUtils.getEvoLogger().info("Class not found - keeping old class loader ",
 			                                 e);
 		}

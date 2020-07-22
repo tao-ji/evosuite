@@ -68,6 +68,15 @@ public class EvoInvocationListener implements InvocationListener, Serializable {
     }
 
 
+    public EvoInvocationListener clone(){
+        EvoInvocationListener clone = new EvoInvocationListener(this.retvalType);
+        clone.active = this.active;
+        for(String key: this.map.keySet()){
+            clone.map.put(key, this.map.get(key).getCopy());
+        }
+        return clone;
+    }
+
     public void changeClassLoader(ClassLoader loader) {
         for(MethodDescriptor descriptor : map.values()){
             if(descriptor != null){

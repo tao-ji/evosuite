@@ -104,8 +104,14 @@ public class CSVStatisticsBackend implements StatisticsBackend {
 	public void writeData(Chromosome result, Map<String, OutputVariable<?>> data) {
 		// Write to evosuite-report/statistics.csv
 		try {
-			File outputDir = getReportDir();			
-			File f = new File(outputDir.getAbsolutePath() + File.separator + "statistics.csv");
+			File outputDir = getReportDir();
+			File f = null;
+			if(Properties.target_version.isEmpty()){
+				f = new File(outputDir.getAbsolutePath() + File.separator + "statistics.csv");
+			}else{
+				String name = "statistics_"+Properties.target_version+"_"+Properties.TARGET_CLASS+"::"+Properties.TARGET_METHOD_PREFIX.replace("(","")+".csv";
+				f = new File(outputDir.getAbsolutePath() + File.separator + name);
+			}
 			BufferedWriter out = new BufferedWriter(new FileWriter(f, true));
 			if (f.length() == 0L) {
 				out.write(getCSVHeader(data) + "\n");

@@ -167,6 +167,11 @@ public enum RuntimeVariable {
     LineFitnessTimeline,
     LineCoverageTimeline,
     LineCoverageBitString,
+	/** The diff lines coverage --tao */
+	DiffLineCoverage,
+	DiffLineFitnessTimeline,
+	DIffLineCoverageTimeline,
+	DiffLineCoverageBitString,
 	/** The obtained output value coverage */
 	OutputCoverage,
     OutputFitnessTimeline,

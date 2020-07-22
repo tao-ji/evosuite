@@ -755,6 +755,16 @@
                                 <goal>shade</goal>
                             </goals>
                             <configuration>
+                                <filters>
+                                    <filter>
+                                        <artifact>*:*</artifact>
+                                        <excludes>
+                                            <exclude>META-INF/*.SF</exclude>
+                                            <exclude>META-INF/*.DSA</exclude>
+                                            <exclude>META-INF/*.RSA</exclude>
+                                        </excludes>
+                                    </filter>
+                                </filters>
                                 <shadedArtifactAttached>false</shadedArtifactAttached>
                                 <createDependencyReducedPom>true</createDependencyReducedPom>
                                 <!-- do not change "org.evosuite.shaded." as it used in some of the java classes -->
@@ -843,6 +853,18 @@
                                     <relocation>
                                         <pattern>org.objenesis</pattern>
                                         <shadedPattern>org.evosuite.shaded.org.objenesis</shadedPattern>
+                                    </relocation>
+                                    <relocation>
+                                        <pattern>org.eclipse</pattern>
+                                        <shadedPattern>org.evosuite.shaded.org.eclipse</shadedPattern>
+                                    </relocation>
+                                    <relocation>
+                                        <pattern>org.antlr</pattern>
+                                        <shadedPattern>org.evosuite.shaded.org.antlr</shadedPattern>
+                                    </relocation>
+                                    <relocation>
+                                        <pattern>org.codehaus.plexus</pattern>
+                                        <shadedPattern>org.evosuite.shaded.org.codehaus.plexus</shadedPattern>
                                     </relocation>
                                     <!--<relocation>-->
                                         <!--<pattern>org.slf4j</pattern>-->

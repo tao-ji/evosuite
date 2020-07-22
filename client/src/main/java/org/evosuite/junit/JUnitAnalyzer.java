@@ -226,6 +226,9 @@ public class JUnitAnalyzer {
 				}
 
 				boolean toRemove = !(failure.isAssertionError());
+				if(!Properties.target_version.isEmpty()){
+					toRemove=true;
+				}
 
 				for (int i = 0; i < tests.size(); i++) {
 					if (TestSuiteWriterUtils.getNameOfTest(tests, i).equals(testName)) {

@@ -25,6 +25,7 @@ import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.evosuite.classpath.ClassPathHandler;
 import org.evosuite.executionmode.*;
+import org.evosuite.executionmode.TestMerge;
 import org.evosuite.utils.LoggingUtils;
 
 import java.io.File;
@@ -96,6 +97,8 @@ public class CommandLineParameters {
 		Option listParameters = ListParameters.getOption();
 		Option continuous = Continuous.getOption();
 
+		Option[] testmerge = TestMerge.getOptions();
+
 		Option[] generateOptions = TestGeneration.getOptions();
 
 		Option targetClass = new Option("class", true, 
@@ -131,6 +134,10 @@ public class CommandLineParameters {
 
 		@SuppressWarnings("static-access")
 		Option property = OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("use value for given property").create("D");
+
+		for(Option option: testmerge){
+			options.addOption(option);
+		}
 
 		for (Option option : generateOptions) {
 			options.addOption(option);

@@ -137,7 +137,7 @@ public class LineCoverageTestFitness extends TestFitnessFunction {
 	
 	@Override
 	public boolean isCovered(ExecutionResult result) {
-		for ( Integer coveredLine : result.getTrace().getCoveredLines()) {
+		for ( Integer coveredLine : result.getTrace().getCoveredLines(className)) {
 			if (coveredLine.intValue() == this.line.intValue()) {
 				return true;
 			}
@@ -164,7 +164,7 @@ public class LineCoverageTestFitness extends TestFitnessFunction {
 		// evaluating will attempt to claim coverage for it in the archive
 		boolean archive = Properties.TEST_ARCHIVE;
 		Properties.TEST_ARCHIVE = false;
-		if (result.getTrace().getCoveredLines().contains(this.line)) {
+		if (result.getTrace().getCoveredLines(className).contains(this.line)) {
 			fitness = 0.0;
 		} else {
 			double r = Double.MAX_VALUE;
